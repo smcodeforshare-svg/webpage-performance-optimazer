@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Local Project Performance &amp; API Auditor Pro v3.0</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Top Header -->
+    <header class="top-nav">
+      <div class="brand">
+        <div class="logo-icon">&#9889;</div>
+        <div class="brand-text">
+          <h1>Performance &amp; API Auditor Pro</h1>
+          <span class="version-tag">v3.0 Production &bull; Local-First &bull; JS &bull; TSX &bull; PHP &bull; jQuery</span>
+        </div>
+      </div>
+      <div class="security-badge">
+        <span class="pulse-dot"></span>
+        <span>Localhost Only (127.0.0.1)</span>
+      </div>
+    </header>
+
+    <!-- Main Audit Control Bar -->
+    <section class="audit-control-card">
+      <form id="auditForm" class="audit-form">
+        <div class="form-row">
+          <div class="input-group flex-2">
+            <label for="targetUrl">Website Target URL</label>
+            <input type="url" id="targetUrl" placeholder="http://localhost:3000 or http://localhost/my-php-site" />
+          </div>
+          <div class="input-group flex-2">
+            <label for="projectPath">Local Project Directory Path</label>
+            <input type="text" id="projectPath" placeholder="D:\xampp\htdocs\my-wordpress-theme or D:\projects\my-app" />
+          </div>
+        </div>
+
+        <div class="form-options">
+          <div class="toggle-group">
+            <label class="toggle-label">
+              <input type="checkbox" id="isMobile" />
+              <span>Mobile Viewport (iPhone 14)</span>
+            </label>
+            <label class="toggle-label">
+              <input type="checkbox" id="warmCache" />
+              <span>Warm Cache Mode</span>
+            </label>
+            <label class="toggle-label">
+              <input type="checkbox" id="screenshot" checked />
+              <span>Capture Screenshot</span>
+            </label>
+          </div>
+
+          <div class="repeat-runs">
+            <label for="repeatRuns">Test Runs:</label>
+            <select id="repeatRuns">
+              <option value="1" selected>1 Run</option>
+              <option value="3">3 Runs (Median)</option>
+              <option value="5">5 Runs (Stable)</option>
+            </select>
+          </div>
+
+          <div class="actions">
+            <button type="submit" id="runAuditBtn" class="btn btn-primary">
+              <span class="btn-icon">&#9654;</span> Run Comprehensive Audit
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <!-- Progress Banner -->
+      <div id="progressBanner" class="progress-banner hidden">
+        <div class="spinner"></div>
+        <div class="progress-text" id="progressText">Analyzing website timings, requests, and source patterns...</div>
+      </div>
+    </section>
+
+    <!-- Scorecard Bar -->
+    <section id="scorecardBar" class="scorecard-container">
+      <div class="score-card main-score">
+        <div class="score-ring" id="ringOverall">--</div>
+        <div class="score-title">Overall Score</div>
+      </div>
+      <div class="score-card">
+        <div class="score-value" id="scorePage">--</div>
+        <div class="score-title">Page Perf</div>
+      </div>
+      <div class="score-card">
+        <div class="score-value" id="scoreNetwork">--</div>
+        <div class="score-title">Network &amp; API</div>
+      </div>
+      <div class="score-card">
+        <div class="score-value" id="scoreReact">--</div>
+        <div class="score-title">JS / TS / jQuery</div>
+      </div>
+      <div class="score-card">
+        <div class="score-value" id="scorePython">--</div>
+        <div class="score-title">Backend (PHP/Py)</div>
+      </div>
+      <div class="score-card">
+        <div class="score-value" id="scoreCss">--</div>
+        <div class="score-title">CSS</div>
+      </div>
+      <div class="score-card">
+        <div class="score-value" id="scoreDeps">--</div>
+        <div class="score-title">Dependencies</div>
+      </div>
+    </section>
+
+    <!-- Navigation Tabs -->
+    <nav class="tabs-nav">
+      <button class="tab-btn active" data-tab="tabOverview">Overview</button>
+      <button class="tab-btn" data-tab="tabFindings">Source Findings <span class="badge-count" id="countFindings">0</span></button>
+      <button class="tab-btn" data-tab="tabPatching">Safe Patching &amp; Diffs</button>
+      <button class="tab-btn" data-tab="tabRequests">Network &amp; APIs <span class="badge-count" id="countRequests">0</span></button>
+      <button class="tab-btn" data-tab="tabJs">JS &amp; jQuery</button>
+      <button class="tab-btn" data-tab="tabPhp">PHP &amp; WordPress</button>
+      <button class="tab-btn" data-tab="tabReact">React &amp; Next.js</button>
+      <button class="tab-btn" data-tab="tabPython">Python / Backend</button>
+      <button class="tab-btn" data-tab="tabCss">CSS &amp; Assets</button>
+      <button class="tab-btn" data-tab="tabDependencies">Dependencies</button>
+      <button class="tab-btn" data-tab="tabCompare">Run Comparison</button>
+      <button class="tab-btn" data-tab="tabExports">Reports &amp; Exports</button>
+      <button class="tab-btn" data-tab="tabSettings">Settings &amp; AI</button>
+    </nav>
+
+    <!-- Tab Contents -->
+    <main class="tab-content-area">
+      <!-- 1. OVERVIEW TAB -->
+      <section id="tabOverview" class="tab-pane active">
+        <div class="dashboard-grid">
+          <div class="grid-card">
+            <h3>Core Web Vitals</h3>
+            <div class="vitals-row">
+              <div class="metric-pill">
+                <span class="m-label">TTFB</span>
+                <span class="m-val" id="vitalTtfb">--</span>
+                <span class="m-hint">&le; 800ms</span>
+              </div>
+              <div class="metric-pill">
+                <span class="m-label">FCP</span>
+                <span class="m-val" id="vitalFcp">--</span>
+                <span class="m-hint">&le; 1800ms</span>
+              </div>
+              <div class="metric-pill">
+                <span class="m-label">LCP</span>
+                <span class="m-val" id="vitalLcp">--</span>
+                <span class="m-hint">&le; 2500ms</span>
+              </div>
+              <div class="metric-pill">
+                <span class="m-label">CLS</span>
+                <span class="m-val" id="vitalCls">--</span>
+                <span class="m-hint">&le; 0.1</span>
+              </div>
+            </div>
+
+            <div class="timing-breakdown">
+              <h4>Navigation Timing Breakdown</h4>
+              <div class="timing-bar" id="navTimingBar"></div>
+              <div class="timing-legend" id="navTimingLegend"></div>
+            </div>
+          </div>
+
+          <div class="grid-card">
+            <h3>Network &amp; Request Breakdown</h3>
+            <div class="stat-summary-grid">
+              <div class="stat-box">
+                <span class="s-title">Total Requests</span>
+                <span class="s-num" id="statTotalReqs">--</span>
+              </div>
+              <div class="stat-box">
+                <span class="s-title">Transferred Size</span>
+                <span class="s-num" id="statTotalSize">--</span>
+              </div>
+              <div class="stat-box">
+                <span class="s-title">API Requests</span>
+                <span class="s-num" id="statApiReqs">--</span>
+              </div>
+              <div class="stat-box warning">
+                <span class="s-title">Failed Requests</span>
+                <span class="s-num" id="statFailedReqs">--</span>
+              </div>
+              <div class="stat-box warning">
+                <span class="s-title">Slow Requests (>500ms)</span>
+                <span class="s-num" id="statSlowReqs">--</span>
+              </div>
+              <div class="stat-box">
+                <span class="s-title">Third-Party Calls</span>
+                <span class="s-num" id="statThirdParty">--</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-card full-width">
+            <h3>Transparent Score Deductions</h3>
+            <div id="deductionsList" class="deductions-container">
+              <p class="empty-text">Run an audit to view explainable scoring deductions.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. SOURCE FINDINGS TAB -->
+      <section id="tabFindings" class="tab-pane">
+        <div class="findings-toolbar">
+          <input type="text" id="findingsSearch" placeholder="Search findings by file, symbol, or title..." />
+          <select id="severityFilter">
+            <option value="all">All Severities</option>
+            <option value="critical">Critical</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
+          <select id="confidenceFilter">
+            <option value="all">All Confidence Levels</option>
+            <option value="verified">Verified</option>
+            <option value="strongly_supported">Strongly Supported</option>
+            <option value="hypothesis">Hypothesis</option>
+          </select>
+          <select id="categoryFilter">
+            <option value="all">All Categories</option>
+            <option value="javascript">JavaScript (.js)</option>
+            <option value="jquery">jQuery</option>
+            <option value="typescript">TypeScript / TSX (.ts, .tsx)</option>
+            <option value="php">PHP / WordPress (.php)</option>
+            <option value="react">React / JSX</option>
+            <option value="nextjs">Next.js</option>
+            <option value="python">Python</option>
+            <option value="css">CSS</option>
+            <option value="dependency">Dependencies</option>
+          </select>
+        </div>
+
+        <div id="findingsContainer" class="findings-list">
+          <p class="empty-text">No findings to display. Provide a local project directory and run an audit.</p>
+        </div>
+      </section>
+
+      <!-- 3. SAFE PATCHING TAB -->
+      <section id="tabPatching" class="tab-pane">
+        <div class="patching-layout">
+          <div class="patch-viewer-card">
+            <div class="card-header-bar">
+              <h3 id="activePatchTitle">Unified Diff Preview</h3>
+              <div class="patch-actions">
+                <button id="applyPatchBtn" class="btn btn-success" disabled>Apply Safe Patch</button>
+                <button id="downloadPatchBtn" class="btn btn-secondary" disabled>Download .patch File</button>
+              </div>
+            </div>
+            <div id="patchFileMeta" class="patch-file-meta">Select a finding from the Source Findings tab to preview its patch.</div>
+            <pre id="patchDiffViewer" class="diff-viewer"><code>No active patch selected.</code></pre>
+          </div>
+
+          <div class="backups-card">
+            <h3>Rollback &amp; Backups (.auditor-backups)</h3>
+            <div id="backupsList" class="backups-list">
+              <p class="empty-text">No backups recorded yet.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. NETWORK & APIS TAB -->
+      <section id="tabRequests" class="tab-pane">
+        <div class="table-toolbar">
+          <input type="text" id="requestsSearch" placeholder="Filter requests by URL, endpoint, or method..." />
+          <div class="filter-chips">
+            <button class="chip active" data-req-filter="all">All</button>
+            <button class="chip" data-req-filter="api">API Only</button>
+            <button class="chip" data-req-filter="slow">Slow (>500ms)</button>
+            <button class="chip" data-req-filter="failed">Failed (4xx/5xx)</button>
+            <button class="chip" data-req-filter="third-party">Third Party</button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table" id="requestsTable" style="min-width: 980px;">
+            <thead>
+              <tr>
+                <th style="width: 65px;">Method</th>
+                <th style="width: 65px;">Status</th>
+                <th style="max-width: 260px;">URL &amp; Endpoint</th>
+                <th>API / Source File Path (Click to Open)</th>
+                <th style="width: 140px;">Architecture &amp; Syntax</th>
+                <th style="width: 80px;">Duration</th>
+                <th style="width: 75px;">Size</th>
+              </tr>
+            </thead>
+            <tbody id="requestsTableBody">
+              <tr><td colspan="7" class="empty-cell">No network requests captured yet.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- API Implementation & Multi-File Architecture Inventory -->
+        <div class="grid-card full-width" style="margin-top:24px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+            <h3>API Implementation &amp; Multi-File Architecture Inventory</h3>
+            <span id="apiArchSummaryBadge" class="badge" style="background:#4338ca; color:#e0e7ff; font-size:12px;">0 APIs Discovered</span>
+          </div>
+          <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">
+            Traces complete source code syntax, absolute file paths, and identifies whether each API is contained in a single file or broken across multiple files (Client Caller, Route Handler, Controller, Service, Database Model).
+          </p>
+          <div id="apiArchitectureInventory" class="api-arch-inventory">
+            <p class="empty-text">Run an audit to view API implementation syntax and multi-file architecture.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. JAVASCRIPT & JQUERY TAB -->
+      <section id="tabJs" class="tab-pane">
+        <div class="grid-card full-width">
+          <h3>JavaScript, TypeScript / TSX &amp; jQuery Performance Findings</h3>
+          <div id="jsFindingsList" class="findings-list">
+            <p class="empty-text">No JavaScript, TypeScript, or jQuery findings.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. PHP & WORDPRESS TAB -->
+      <section id="tabPhp" class="tab-pane">
+        <div class="grid-card full-width">
+          <h3>PHP &amp; WordPress Performance &amp; Query Findings</h3>
+          <div id="phpFindingsList" class="findings-list">
+            <p class="empty-text">No PHP or WordPress findings.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 7. REACT & NEXT.JS TAB -->
+      <section id="tabReact" class="tab-pane">
+        <div class="grid-card full-width">
+          <h3>React &amp; Next.js Performance Findings</h3>
+          <div id="reactFindingsList" class="findings-list">
+            <p class="empty-text">No React or Next.js findings.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 8. PYTHON / BACKEND TAB -->
+      <section id="tabPython" class="tab-pane">
+        <div class="grid-card full-width">
+          <h3>Python &amp; Async Backend Findings</h3>
+          <div id="pythonFindingsList" class="findings-list">
+            <p class="empty-text">No Python findings.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 9. CSS & ASSETS TAB -->
+      <section id="tabCss" class="tab-pane">
+        <div class="grid-card full-width">
+          <h3>CSS, Fonts &amp; Layout Shift Findings</h3>
+          <div id="cssFindingsList" class="findings-list">
+            <p class="empty-text">No CSS findings.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 10. DEPENDENCIES & CHUNKS TAB -->
+      <section id="tabDependencies" class="tab-pane">
+        <div class="grid-card full-width">
+          <h3>Dependency Bloat &amp; Bundle Inspection</h3>
+          <div id="bundleChunksSection"></div>
+          <div id="depFindingsList" class="findings-list">
+            <p class="empty-text">No dependency findings.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 11. RUN COMPARISON TAB -->
+      <section id="tabCompare" class="tab-pane">
+        <div class="compare-controls">
+          <div class="input-group">
+            <label for="compareRunA">Baseline Run (A)</label>
+            <select id="compareRunA"></select>
+          </div>
+          <div class="input-group">
+            <label for="compareRunB">Optimized Run (B)</label>
+            <select id="compareRunB"></select>
+          </div>
+          <button id="compareBtn" class="btn btn-primary">Compare Runs</button>
+        </div>
+
+        <div id="comparisonResults" class="comparison-results">
+          <p class="empty-text">Select two audit runs above to view before-and-after performance deltas.</p>
+        </div>
+      </section>
+
+      <!-- 12. REPORTS & EXPORTS TAB -->
+      <section id="tabExports" class="tab-pane">
+        <div class="export-cards-grid">
+          <div class="export-card">
+            <h4>HTML Standalone Report</h4>
+            <p>Self-contained HTML file viewable offline in any browser with full API code syntax and multi-file breakdown.</p>
+            <button id="btnExportHtml" class="btn btn-secondary">Download HTML Report</button>
+          </div>
+          <div class="export-card">
+            <h4>JSON Full Audit Data</h4>
+            <p>Complete machine-readable audit report with metrics, AST findings, and API architecture.</p>
+            <button id="btnExportJson" class="btn btn-secondary">Download JSON</button>
+          </div>
+          <div class="export-card">
+            <h4>CSV Network &amp; API Inventory</h4>
+            <p>Spreadsheet of all HTTP requests with timings, multi-file flags, and implementation links.</p>
+            <button id="btnExportCsvReqs" class="btn btn-secondary">Download Requests CSV</button>
+          </div>
+          <div class="export-card">
+            <h4>CSV Source Findings</h4>
+            <p>Itemized findings list with absolute file paths, line numbers, and evidence.</p>
+            <button id="btnExportCsvFindings" class="btn btn-secondary">Download Findings CSV</button>
+          </div>
+          <div class="export-card">
+            <h4>Printable / PDF View</h4>
+            <p>Clean printable document formatted for browser PDF export.</p>
+            <button id="btnExportPdf" class="btn btn-secondary">Open Printable View</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 13. SETTINGS & AI TAB -->
+      <section id="tabSettings" class="tab-pane">
+        <div class="settings-grid">
+          <div class="grid-card">
+            <h3>Local Privacy &amp; Security Status</h3>
+            <ul class="settings-list">
+              <li><strong>Bind Address:</strong> <code>127.0.0.1</code> (Loopback only)</li>
+              <li><strong>Path Traversal Protection:</strong> Active (strict boundaries enforced)</li>
+              <li><strong>Credential Sanitization:</strong> Authorization, Cookie, and API tokens redacted</li>
+              <li><strong>Default Backup Directory:</strong> <code>.auditor-backups/</code></li>
+            </ul>
+          </div>
+
+          <div class="grid-card">
+            <h3>Optional AI Analysis (Opt-In)</h3>
+            <p class="sub-text">Local static analysis and browser auditing operate completely offline. You may optionally connect an OpenAI-compatible endpoint (e.g. Ollama or LocalAI).</p>
+            <div class="input-group">
+              <label for="aiEndpoint">AI Endpoint</label>
+              <input type="text" id="aiEndpoint" value="http://localhost:11434/v1" />
+            </div>
+            <div class="input-group">
+              <label for="aiModel">Model Name</label>
+              <input type="text" id="aiModel" value="llama3" />
+            </div>
+            <div class="input-group">
+              <label class="toggle-label">
+                <input type="checkbox" id="aiEnabled" />
+                <span>Enable Opt-in AI Suggestions</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Modal for Diff / AI / API Architecture Preview -->
+    <div id="modalBackdrop" class="modal-backdrop hidden">
+      <div class="modal-box">
+        <div class="modal-header">
+          <h3 id="modalTitle">Modal Title</h3>
+          <button id="modalCloseBtn" class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+        <div class="modal-footer" id="modalFooter"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

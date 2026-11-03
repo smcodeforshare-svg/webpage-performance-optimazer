@@ -1,0 +1,13 @@
+{
+  "name": "sample-react-app",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.4",
+    "axios": "^1.4.0",
+    "node-fetch": "^3.3.1"
+  }
+}

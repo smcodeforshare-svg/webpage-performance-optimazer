@@ -1,0 +1,273 @@
+Project Requirement: Build an Unused Code Detection, Reporting & Auto-Fix Feature
+
+I have an existing project in ZIP format. I will upload the ZIP file. Your task is to carefully analyze the entire existing project and implement a new feature called Unused Code Detection, Detailed Reporting, and Automatic Cleanup.
+
+1. Important Instructions
+First, extract and understand the complete existing project structure.
+Analyze the existing architecture, programming languages, frameworks, UI, and functionality.
+Do not unnecessarily modify existing code.
+Do not change the existing UI, design, layout, colors, styling, or functionality.
+Keep all existing features working exactly as they currently work.
+Add the new feature by following the existing project's architecture and coding standards.
+Do not remove or overwrite any existing functionality.
+Make sure the implementation works with the actual project, not just a demonstration or hardcoded example.
+2. Unused CSS Detection
+
+The system should scan all CSS files in the uploaded project and identify:
+
+CSS classes that are used in the project.
+CSS classes that are not used anywhere in the project.
+CSS classes that are used in only one page.
+CSS classes that are used in multiple pages.
+CSS selectors that are partially used or potentially unused.
+CSS rules that are duplicated or overridden, where safely identifiable.
+Example
+
+Suppose a CSS file contains:
+
+css
+.cl-wd-100 {
+    width: 100%;
+}
+
+.background-green {
+    background: green;
+}
+
+.margin-50 {
+    margin: 50px;
+}
+
+.font-size-95 {
+    font-size: 95px;
+}
+
+.col-wd-50 {
+    width: 50%;
+}
+
+.col-tab-25 {
+    width: 25%;
+}
+
+.col-mob-100 {
+    width: 100%;
+}
+
+.background-red {
+    background: red;
+}
+
+
+These classes are used in different pages.
+
+Page 1:
+
+HTML
+<div class="cl-wd-100 background-green margin-50">
+    <h1 class="font-size-95">Welcome testing text</h1>
+</div>
+
+
+Page 2:
+
+HTML
+<div class="col-wd-50 col-tab-25 col-mob-100 background-red">
+    <h1>Hello World my stl css</h1>
+</div>
+
+
+Expected result:
+
+All classes used in Page 1 should be identified as used.
+All classes used in Page 2 should be identified as used.
+Classes used only in Page 1 should be reported as used only in Page 1.
+Classes used only in Page 2 should be reported as used only in Page 2.
+Any CSS classes not used anywhere in the entire project should be reported as unused.
+
+Important: Do not consider a CSS class unused just because it is not present in every page. Search the entire project before marking it unused.
+
+3. Detailed Unused CSS Report
+
+Generate a detailed report containing the following information for every detected CSS rule:
+
+CSS file name.
+Complete file path.
+CSS selector or class name.
+Usage status (Used / Unused / Potentially Unused).
+Page or component where the CSS is used.
+Number of occurrences.
+Starting line number.
+Ending line number.
+Exact CSS source code.
+Code syntax highlighting.
+Example report
+
+File: assets/css/style.css
+
+CSS Class	Status	Used In	Start Line	End Line
+.cl-wd-100	Used	page1.html	1	3
+.background-green	Used	page1.html	5	7
+.margin-50	Used	page1.html	9	11
+.font-size-95	Used	page1.html	13	15
+.col-wd-50	Used	page2.html	17	19
+.background-red	Used	page2.html	25	27
+.unused-class	Unused	None	35	37
+
+The report must show the exact source code with proper syntax highlighting.
+
+4. Code Highlighting and Color Identification
+
+When displaying the report:
+
+Used CSS code must appear in black, grey, or the existing neutral code-editor color.
+Unused CSS code must be highlighted in RED.
+Potentially unused code must have a separate warning indicator.
+File paths and line numbers must be clearly visible.
+Highlight the complete unused CSS rule, not just its class name.
+
+Example:
+
+css
+/* USED - Normal grey/black text */
+.background-green {
+    background: green;
+}
+
+/* UNUSED - Highlight this complete rule in RED */
+.unused-class {
+    color: blue;
+    padding: 20px;
+}
+
+
+The actual UI should use syntax highlighting rather than changing the original source code colors.
+
+5. Apply Fix Functionality
+
+Add an Apply Fix option to the unused code report.
+
+When the user clicks Apply Fix:
+
+Remove only the confirmed unused CSS rules.
+Preserve all used CSS rules.
+Preserve the original order of remaining CSS rules.
+Preserve comments wherever possible.
+Preserve media queries.
+Preserve responsive styles.
+Preserve CSS variables and dependencies.
+Do not modify unrelated code.
+Update the CSS file with the cleaned content.
+Refresh the report after applying the fix.
+Important safety requirement
+Show a confirmation message before modifying files.
+Create a backup or provide an undo option.
+Do not automatically delete potentially unused CSS.
+Do not remove CSS referenced dynamically through JavaScript, PHP, templates, generated HTML, or runtime class names.
+Do not delete CSS used by third-party integrations or external components unless usage can be established.
+If usage cannot be determined confidently, mark it as Potentially Unused instead of deleting it.
+6. Extend the Same Functionality to Other File Types
+
+The same concept should be extended to other programming languages and file types wherever technically possible.
+
+Supported file types should include:
+
+File Type	Extension	Detection Requirements
+CSS	.css	Unused selectors and rules
+JavaScript	.js	Unused variables, functions, imports and exports
+TypeScript	.ts	Unused variables, functions, imports and types
+React JSX	.jsx	Unused imports, variables and components
+React TSX	.tsx	Unused imports, variables, types and components
+Next JS	    .tsx	Unused imports, variables, types,  functions and components
+Nest JS	    .jsx	Unused imports, variables, types,  functions and components
+PHP	.php	Unused functions, variables, imports and classes where safely identifiable
+Python	.py	Unused imports, variables, functions and classes where safely identifiable
+HTML	.html	Unused IDs, classes and other safely detectable references
+SCSS	.scss	Unused selectors and variables
+SASS	.sass	Unused selectors and variables
+Less	.less	Unused selectors and variables
+
+For every language, provide:
+
+File path.
+File name.
+Syntax highlighting.
+Starting line number.
+Ending line number.
+Exact source code.
+Used/Unused/Potentially Unused status.
+Usage references wherever identifiable.
+
+Use appropriate parsers, AST analysis, language-specific tools, or static analysis techniques instead of simple text matching wherever possible.
+
+Do not incorrectly classify code as unused when it is dynamically referenced, called through reflection, loaded automatically, or used through framework conventions.
+
+7. Report UI Requirements
+
+Add the feature to the existing project's UI without changing the existing design.
+
+The report should provide:
+
+Summary of total scanned files.
+Total used code blocks.
+Total unused code blocks.
+Total potentially unused code blocks.
+File-wise report.
+Language-wise report.
+Search and filter functionality.
+Used/Unused/Potentially Unused filters.
+Expandable code sections.
+Syntax-highlighted source code.
+File paths and exact line numbers.
+Apply Fix option.
+Undo or backup restoration option.
+
+Use the existing UI components, theme, and design system.
+
+8. Accuracy and Performance
+
+The analysis must:
+
+Scan the complete project recursively.
+Respect the existing project structure.
+Ignore dependency folders such as node_modules, vendor, build, dist, and other generated folders where appropriate.
+Allow configurable ignore patterns.
+Understand imports and references between files.
+Consider framework-specific usage patterns.
+Avoid false positives as much as reasonably possible.
+Avoid modifying files outside the intended project.
+Handle large projects efficiently.
+Provide meaningful errors if files cannot be analyzed.
+9. Testing Requirements
+
+After implementing the feature:
+
+Test the CSS example provided above.
+Create test cases with CSS used in one page only.
+Create test cases with CSS shared across multiple pages.
+Create genuinely unused CSS rules.
+Test media queries and responsive CSS.
+Test dynamically applied CSS classes.
+Test JavaScript, TypeScript, JSX, TSX, PHP, and Python detection.
+Test Apply Fix.
+Verify that used code remains unchanged.
+Verify that unrelated project files remain unchanged.
+Verify that existing project functionality continues to work.
+10. Final Deliverables
+
+After completing the implementation, provide:
+
+Updated project source code.
+List of newly created files.
+List of modified files.
+Explanation of how unused code detection works.
+Explanation of how usage is identified across multiple pages and components.
+Explanation of how Apply Fix works.
+Testing results.
+Any known limitations or cases where detection is not 100% reliable.
+
+MOST IMPORTANT REQUIREMENT:
+
+I am uploading an existing ZIP project. Do not create a completely new project or replace my existing application. Understand the existing project first, implement this feature inside it, and preserve all existing functionality and UI.
+
+The final result must be a fully integrated, working implementation, not just a UI design, sample report, or proof of concept.

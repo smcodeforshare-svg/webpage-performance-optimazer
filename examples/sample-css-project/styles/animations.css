@@ -1,0 +1,8 @@
+@keyframes spin {
+  from { top: 0; }
+  to { top: 10px; }
+}
+
+.card {
+  transition: transform 0.2s ease;
+}

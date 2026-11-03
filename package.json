@@ -1,0 +1,32 @@
+{
+  "name": "local-project-performance-api-auditor-pro",
+  "version": "3.0.0",
+  "description": "Production-quality, local-first web application auditing website performance, API requests, React/Next.js, Python, CSS, and source code bottlenecks.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node tests/run-all-tests.js",
+    "postinstall": "npx playwright install chromium"
+  },
+  "keywords": [
+    "performance",
+    "auditor",
+    "api",
+    "core-web-vitals",
+    "react",
+    "nextjs",
+    "python",
+    "css",
+    "playwright",
+    "code-diff",
+    "safe-patches"
+  ],
+  "author": "Performance Engineering Team",
+  "license": "MIT",
+  "dependencies": {
+    "playwright": "^1.40.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

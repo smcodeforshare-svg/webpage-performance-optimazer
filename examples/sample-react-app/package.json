@@ -1,0 +1,9 @@
+{
+  "name": "sample-react-app",
+  "private": true,
+  "dependencies": {
+    "react": "^18.2.0",
+    "moment": "^2.29.4",
+    "lodash": "^4.17.0"
+  }
+}
